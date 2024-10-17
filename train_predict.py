@@ -69,20 +69,20 @@ if os.path.isfile("label_list_mod"): # filename is modified,
 
     # Define traits and their respective features
     traits = [
-        ("Emotional Stability", feature_set_trait_1, labels_trait_1, 8),
-        ("Mental Energy or Will Power", feature_set_trait_2, labels_trait_2, 16),
-        ("Modesty", feature_set_trait_3, labels_trait_3, 32),
-        ("Personal Harmony and Flexibility", feature_set_trait_4, labels_trait_4, 64),
-        ("Lack of Discipline", feature_set_trait_5, labels_trait_5, 42),
-        ("Poor Concentration", feature_set_trait_6, labels_trait_6, 52),
-        ("Non Communicativeness", feature_set_trait_7, labels_trait_7, 21),
-        ("Social Isolation", feature_set_trait_8, labels_trait_8, 73)
+        ("Emotional Stability", feature_set_trait_1, labels_trait_1, 8, "poly"),
+        ("Mental Energy or Will Power", feature_set_trait_2, labels_trait_2, 8, "linear"),
+        ("Modesty", feature_set_trait_3, labels_trait_3, 32, "linear"),
+        ("Personal Harmony and Flexibility", feature_set_trait_4, labels_trait_4, 64, "linear"),
+        ("Lack of Discipline", feature_set_trait_5, labels_trait_5, 42, "sigmoid"),
+        ("Poor Concentration", feature_set_trait_6, labels_trait_6, 52, "linear"),
+        ("Non Communicativeness", feature_set_trait_7, labels_trait_7, 21, "poly"),
+        ("Social Isolation", feature_set_trait_8, labels_trait_8, 73, "linear")
     ]
 
     # Function to evaluate and print metrics for each classifier
-    def evaluate_classifier(features, labels, random_state):
-        X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=0.30, random_state=random_state)
-        classifier = SVC(kernel='rbf')
+    def evaluate_classifier(features, labels, random_state, kern):
+        X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=0.3, random_state=random_state)
+        classifier = SVC(kernel=kern)
         classifier.fit(X_train, y_train)
         predictions = classifier.predict(X_test)
 
@@ -93,8 +93,8 @@ if os.path.isfile("label_list_mod"): # filename is modified,
         return classifier, accuracy, report, confusion_mat
 
     # Evaluate and print results for each trait
-    for trait_name, feature_set, labels, random_state in traits:
-        classifier, accuracy, report, confusion_mat = evaluate_classifier(feature_set, labels, random_state)
+    for trait_name, feature_set, labels, random_state, kernel in traits:
+        classifier, accuracy, report, confusion_mat = evaluate_classifier(feature_set, labels, random_state, kernel)
         classifiers.append((trait_name, classifier))
         print(f"Classifier for {trait_name}")
         print(f"Accuracy: {accuracy}")
@@ -117,6 +117,7 @@ if os.path.isfile("label_list_mod"): # filename is modified,
         plt.ylabel("True")
         plt.show()
 
+    classifier_1, classifier_2, classifier_3, classifier_4, classifier_5, classifier_6, classifier_7, classifier_8 = classifiers
     # Prediction loop for new samples
     with open('classifiers.pkl', 'wb') as f:
         pickle.dump(classifiers, f)
@@ -129,7 +130,7 @@ if os.path.isfile("label_list_mod"): # filename is modified,
         if file_name == 'z':
             break
 
-        classifier_1, classifier_2, classifier_3, classifier_4, classifier_5, classifier_6, classifier_7, classifier_8 = classifiers
+
         raw_features = extract_v3.start(file_name)
         predictions = {
             "Emotional Stability": classifier_1.predict([[raw_features[0], raw_features[6]]]),

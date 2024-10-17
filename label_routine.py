@@ -4,11 +4,6 @@ import os
 
 
 def determine_emotional_stability(baseline_angle, slant_angle):
-    # emotional_stability = 1 = stable, 0 = not stable
-    # if (slant_angle == 0 or slant_angle == 4 or slant_angle == 6 or baseline_angle == 0):
-    #     return 0
-    # else:
-    #     return 1
     if slant_angle == 0 or baseline_angle == 0:
         return 0
     elif 4 < slant_angle < 6:
